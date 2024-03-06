@@ -1,0 +1,7 @@
+# ignore jetbrains and vscode
+/.idea
+/.vscode
+# ignore the build directory
+/bin
+# ignore the code repository
+code
