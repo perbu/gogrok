@@ -38,6 +38,7 @@ func (r *Repo) Parse() error {
 		if !ok {
 			return fmt.Errorf("r.GetModule(%s): not found", name)
 		}
+		// Load source code for local modules
 		if mod.Type == DepTypeLocal {
 			err := mod.LoadSource()
 			if err != nil {
@@ -48,4 +49,14 @@ func (r *Repo) Parse() error {
 	// Populate reverse dependencies, both packages and modules.
 	r.reverseDeps()
 	return nil
+}
+
+func (r *Repo) ModuleFilter(t DepType) []Module {
+	mods := make([]Module, 0)
+	for _, v := range r.modules {
+		if v.Type == t {
+			mods = append(mods, *v)
+		}
+	}
+	return mods
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/perbu/gogrok/analytics"
+	"github.com/perbu/gogrok/render"
 	"io"
 	"os"
 	"os/signal"
@@ -28,5 +29,12 @@ func run(ctx context.Context, output io.Writer, env, args []string) error {
 	if err != nil {
 		return fmt.Errorf("r.Parse: %w", err)
 	}
+
+	s := render.New(r)
+	err = s.Start(ctx)
+	if err != nil {
+		return fmt.Errorf("s.Start: %w", err)
+	}
+
 	return nil
 }

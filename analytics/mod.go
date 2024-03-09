@@ -97,3 +97,20 @@ func (r *Repo) ParseMod(modulePath string) error {
 	r.modules[file.Module.Mod.Path] = m
 	return nil
 }
+
+func (m *Module) GetStringDependencies() []string {
+	depStrings := make([]string, 0, len(m.Dependencies))
+	for _, dep := range m.Dependencies {
+		depStrings = append(depStrings, dep.Path)
+	}
+	return depStrings
+
+}
+
+func (m *Module) GetStringReverseDependencies() []string {
+	depStrings := make([]string, 0, len(m.ReverseModuleDependencies))
+	for _, dep := range m.ReverseModuleDependencies {
+		depStrings = append(depStrings, dep.Path)
+	}
+	return depStrings
+}
