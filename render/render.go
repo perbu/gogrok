@@ -14,27 +14,27 @@ type Frontpage struct {
 
 type Module struct {
 	Path                  string
-	Dependencies          []Module
+	Dependencies          []*Module
 	NoOfDependencies      int
-	ReverseDependencies   []Module
+	ReverseDependencies   []*Module
 	NoOfReverseDependents int
-	Packages              []Package
+	Packages              []*Package
 }
 
 type Package struct {
 	Path                  string
-	Dependencies          []Package
+	Dependencies          []*Package
 	NoOfDependencies      int
-	ReverseDependencies   []Package
+	ReverseDependencies   []*Package
 	NoOfReverseDependents int
-	Files                 []File
+	Files                 []*File
 	NofFiles              int
 }
 
 type File struct {
 	Path     string
-	Package  Package
-	Module   Module
+	Package  *Package
+	Module   *Module
 	Lines    []string
 	NofLines int
 }

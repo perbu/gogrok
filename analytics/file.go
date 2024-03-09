@@ -1,8 +1,9 @@
-package repo
+package analytics
 
 import (
 	"bufio"
 	"os"
+	"path"
 	"strings"
 )
 
@@ -21,9 +22,10 @@ func (p *Package) AddFile(name string) *File {
 		panic("readFile: " + err.Error())
 
 	}
+
 	// create a new file:
 	f := &File{
-		Name:    name,
+		Name:    path.Base(name),
 		Imports: make([]*Package, 0),
 		Package: p,
 		Module:  p.Module,

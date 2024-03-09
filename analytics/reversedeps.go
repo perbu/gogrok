@@ -1,11 +1,11 @@
-package repo
+package analytics
 
-func PopulateReverseDependencies(repo *Repo) {
+func (r *Repo) reverseDeps() {
 	// Initialize a map for reverse package dependencies to avoid duplicates
 	packageReverseDepsMap := make(map[*Package]map[*Package]struct{})
 
 	// Iterate through modules in the repo
-	for _, module := range repo.modules {
+	for _, module := range r.modules {
 		// Populate Reverse Module Dependencies
 		for _, dependency := range module.Dependencies {
 			dependency.ReverseModuleDependencies = append(dependency.ReverseModuleDependencies, module)

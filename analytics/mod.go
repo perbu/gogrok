@@ -1,7 +1,8 @@
-package repo
+package analytics
 
 import (
 	"fmt"
+	"github.com/perbu/gogrok/gitver"
 	mf "golang.org/x/mod/modfile"
 	"os"
 	"path/filepath"
@@ -10,10 +11,8 @@ import (
 type DepType int
 
 const (
-	DepTypeUnknown DepType = iota
-	DepTypeLocal
+	DepTypeLocal DepType = iota + 1
 	DepTypeExternal
-	DepTypeStdlib
 )
 
 func (r *Repo) GetModule(path string) (*Module, bool) {
@@ -50,6 +49,12 @@ func (r *Repo) FindModule(path string) (string, bool) {
 }
 
 func (r *Repo) ParseMod(modulePath string) error {
+
+	latestVersion, err := gitver.GetLatestTag(modulePath)
+	if err != nil {
+		return fmt.Errorf("gitver.GetLatestTag: %w")
+	}
+
 	modFilePath := filepath.Join(modulePath, "go.mod")
 	data, err := os.ReadFile(modFilePath)
 	if err != nil {
@@ -65,13 +70,13 @@ func (r *Repo) ParseMod(modulePath string) error {
 		m = &Module{
 			Path:                      file.Module.Mod.Path,
 			Location:                  modulePath,
-			Version:                   file.Module.Mod.Version,
 			Dependencies:              make([]*Module, 0, len(file.Require)),
 			Repo:                      r,
 			ReverseModuleDependencies: make([]*Module, 0),
 		}
 	}
 	m.Type = DepTypeLocal
+	m.Version = latestVersion
 	for _, require := range file.Require {
 		ref, ok := r.modules[require.Mod.Path]
 		switch ok {

@@ -1,4 +1,4 @@
-package repo
+package analytics
 
 import (
 	"fmt"
@@ -29,9 +29,14 @@ func (m *Module) LoadSource() error {
 			// Ensure we know about the package
 			p, ok := m.GetPackage(file.Name.Name)
 			if !ok {
+				rpath, err := filepath.Rel(m.Location, path)
+				if err != nil {
+					fmt.Println(err)
+					return fmt.Errorf("filepath.Rel: %w", err)
+				}
 				p = &Package{
 					Name:                file.Name.Name,
-					Location:            path,
+					Location:            rpath,
 					Module:              m,
 					Files:               make([]*File, 0),
 					ReverseDependencies: make([]*Package, 0),

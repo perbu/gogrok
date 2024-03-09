@@ -1,4 +1,4 @@
-package repo
+package analytics
 
 func (m *Module) GetPackage(name string) (*Package, bool) {
 	for _, pkg := range m.Packages {
