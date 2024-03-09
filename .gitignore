@@ -6,5 +6,7 @@
 # ignore the code repository
 code
 
+# The output of the build:
+build/
 # The database
 db.sqlite3

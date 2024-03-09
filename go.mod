@@ -3,7 +3,7 @@ module github.com/perbu/gogrok
 go 1.22.1
 
 require (
-	golang.org/x/mod v0.10.0
+	golang.org/x/mod v0.16.0
 	zombiezen.com/go/sqlite v1.1.2
 )
 
