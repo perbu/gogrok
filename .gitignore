@@ -5,3 +5,6 @@
 /bin
 # ignore the code repository
 code
+
+# The database
+db.sqlite3
