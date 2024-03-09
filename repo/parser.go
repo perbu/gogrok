@@ -30,10 +30,11 @@ func (m *Module) LoadSource() error {
 			p, ok := m.GetPackage(file.Name.Name)
 			if !ok {
 				p = &Package{
-					Name:     file.Name.Name,
-					Location: path,
-					Module:   m,
-					Files:    make([]*File, 0),
+					Name:                file.Name.Name,
+					Location:            path,
+					Module:              m,
+					Files:               make([]*File, 0),
+					ReverseDependencies: make([]*Package, 0),
 				}
 				m.AddPackage(p)
 			}

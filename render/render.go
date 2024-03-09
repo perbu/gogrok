@@ -3,13 +3,40 @@ package render
 import (
 	_ "embed"
 	"fmt"
-	"github.com/perbu/gogrok/repo"
 	"html/template"
 	"os"
 )
 
 type Frontpage struct {
-	Modules []*repo.Module
+	LocalModules    []Module
+	ExternalModules []Module
+}
+
+type Module struct {
+	Path                  string
+	Dependencies          []Module
+	NoOfDependencies      int
+	ReverseDependencies   []Module
+	NoOfReverseDependents int
+	Packages              []Package
+}
+
+type Package struct {
+	Path                  string
+	Dependencies          []Package
+	NoOfDependencies      int
+	ReverseDependencies   []Package
+	NoOfReverseDependents int
+	Files                 []File
+	NofFiles              int
+}
+
+type File struct {
+	Path     string
+	Package  Package
+	Module   Module
+	Lines    []string
+	NofLines int
 }
 
 //go:embed frontpage.gohtml

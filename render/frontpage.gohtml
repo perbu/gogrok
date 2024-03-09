@@ -55,8 +55,8 @@
                 <li>
                     <a href="{{.Path}}">{{.Path}}</a>
                     <div class="module-stats">
-                        <div><span class="stats-label">Imported by:</span> 0</div>
-                        <div><span class="stats-label">Depends on:</span> 0</div>
+                        <div><span class="stats-label">Dependencies: {{.NoOfDependencies}}</span> 0</div>
+                        <div><span class="stats-label">Reverse Deps: {{.NoOfReverseDependencies}}</span> 0</div>
                     </div>
                 </li>
             {{end}}

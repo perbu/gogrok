@@ -16,16 +16,6 @@ const (
 	DepTypeStdlib
 )
 
-type Module struct {
-	Path         string // module path ie. github.com/perbu/gogrok
-	Location     string // file path
-	Version      string // module version
-	Dependencies []*Module
-	Packages     []*Package
-	Type         DepType
-	Repo         *Repo
-}
-
 func (r *Repo) GetModule(path string) (*Module, bool) {
 	m, ok := r.modules[path]
 	if !ok {
@@ -73,11 +63,12 @@ func (r *Repo) ParseMod(modulePath string) error {
 	m, ok := r.modules[file.Module.Mod.Path]
 	if !ok {
 		m = &Module{
-			Path:         file.Module.Mod.Path,
-			Location:     modulePath,
-			Version:      file.Module.Mod.Version,
-			Dependencies: make([]*Module, 0, len(file.Require)),
-			Repo:         r,
+			Path:                      file.Module.Mod.Path,
+			Location:                  modulePath,
+			Version:                   file.Module.Mod.Version,
+			Dependencies:              make([]*Module, 0, len(file.Require)),
+			Repo:                      r,
+			ReverseModuleDependencies: make([]*Module, 0),
 		}
 	}
 	m.Type = DepTypeLocal
@@ -88,10 +79,11 @@ func (r *Repo) ParseMod(modulePath string) error {
 			m.Dependencies = append(m.Dependencies, ref)
 		case false:
 			newDep := &Module{
-				Path:    require.Mod.Path,
-				Version: require.Mod.Version,
-				Type:    DepTypeExternal, // all dependencies are external until proven otherwise
-				Repo:    r,
+				Path:                      require.Mod.Path,
+				Version:                   require.Mod.Version,
+				Type:                      DepTypeExternal, // all dependencies are external until proven otherwise
+				Repo:                      r,
+				ReverseModuleDependencies: make([]*Module, 0),
 			}
 			m.Dependencies = append(m.Dependencies, newDep)
 			r.modules[require.Mod.Path] = newDep

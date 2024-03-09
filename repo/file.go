@@ -1,13 +1,10 @@
 package repo
 
-import "strings"
-
-type File struct {
-	Name    string
-	Imports []*Package
-	Package *Package
-	Module  *Module
-}
+import (
+	"bufio"
+	"os"
+	"strings"
+)
 
 // AddFile adds a file to the package
 func (p *Package) AddFile(name string) *File {
@@ -17,12 +14,20 @@ func (p *Package) AddFile(name string) *File {
 			panic("file already exists")
 		}
 	}
+	//
+	lines, err := readFile(name)
+	if err != nil {
+		// should never happen
+		panic("readFile: " + err.Error())
+
+	}
 	// create a new file:
 	f := &File{
 		Name:    name,
 		Imports: make([]*Package, 0),
 		Package: p,
 		Module:  p.Module,
+		Lines:   lines,
 	}
 	p.Files = append(p.Files, f)
 	return f
@@ -62,4 +67,26 @@ func packageNameFromImportPath(path string) string {
 	// package name is the last part of the import path
 	parts := strings.Split(path, "/")
 	return parts[len(parts)-1]
+}
+
+// readFile reads a file and return a list of lines
+func readFile(path string) ([]string, error) {
+	// Open the file for reading.
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err // Return the error if the file cannot be opened.
+	}
+	defer file.Close() // Ensure the file is closed after this function completes.
+
+	var lines []string
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text()) // Add the line to the lines slice.
+	}
+
+	if err := scanner.Err(); err != nil {
+		return nil, err // Return the error if a scanning error occurs.
+	}
+
+	return lines, nil // Return the slice of lines and a nil error.
 }

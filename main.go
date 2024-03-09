@@ -45,7 +45,8 @@ func run(ctx context.Context, output io.Writer, env, args []string) error {
 		}
 	}
 
-	localModulesNames := make([]string, 0)
+	localModuleNames := make([]string, 0)
+	externalModuleNames := make([]string, 0)
 	// Second pass: load and parse all source code:
 	for _, name := range r.GetModuleNames() {
 		mod, ok := r.GetModule(name)
@@ -57,29 +58,40 @@ func run(ctx context.Context, output io.Writer, env, args []string) error {
 			if err != nil {
 				return fmt.Errorf("mod.LoadSource: %w", err)
 			}
-			localModulesNames = append(localModulesNames, name)
+			localModuleNames = append(localModuleNames, name)
+		} else {
+			externalModuleNames = append(externalModuleNames, name)
 		}
 	}
-	// sort localModulesNames
-	sort.Strings(localModulesNames)
+	// Populate reverse dependencies, both packages and modules.
+	repo.PopulateReverseDependencies(r)
 
-	fpModules := make([]*repo.Module, 0)
-	for _, mod := range localModulesNames {
+	// sort the module lists:
+	sort.Strings(localModuleNames)
+	sort.Strings(externalModuleNames)
+
+	localModules := make([]*repo.Module, 0)
+	for _, mod := range localModuleNames {
 		m, ok := r.GetModule(mod)
 		if !ok {
 			return fmt.Errorf("r.GetModule(%s): not found", mod)
 		}
-		fpModules = append(fpModules, m)
+		localModules = append(localModules, m)
+	}
+	externalModules := make([]*repo.Module, 0)
+	for _, mod := range externalModuleNames {
+		m, ok := r.GetModule(mod)
+		if !ok {
+			return fmt.Errorf("r.GetModule(%s): not found", mod)
+		}
+		externalModules = append(externalModules, m)
 	}
 	const basePath = "build"
 	// Now we can generate the output.
-	fp := render.Frontpage{
-		Modules: fpModules,
-	}
+	fp := render.Frontpage{}
 	err = render.RenderFrontpage(fp, path.Join(basePath, "index.html"))
 	if err != nil {
 		return fmt.Errorf("render.RenderFrontpage: %w", err)
 	}
-
 	return nil
 }

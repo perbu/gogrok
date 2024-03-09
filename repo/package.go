@@ -1,12 +1,5 @@
 package repo
 
-type Package struct {
-	Name     string
-	Location string
-	Module   *Module
-	Files    []*File
-}
-
 func (m *Module) GetPackage(name string) (*Package, bool) {
 	for _, pkg := range m.Packages {
 		if pkg.Name == name {
