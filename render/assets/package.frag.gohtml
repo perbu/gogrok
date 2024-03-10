@@ -1,0 +1,12 @@
+{{ define "packageFragment" }}
+    <div id="package-details">
+        <h4>Package: {{ .Name }}</h4>
+        Files:
+        <ul>
+            {{ range .Files }}
+                <li><a href="/file/{{ .Path }}" hx-get="/file/{{ .Path }}" hx-target="#file-content">{{ .Name }}</a></li>
+            {{ end }}
+        </ul>
+    </div>
+    <div id="file-content"></div>
+{{ end }}

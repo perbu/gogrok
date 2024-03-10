@@ -30,7 +30,10 @@ func run(ctx context.Context, output io.Writer, env, args []string) error {
 		return fmt.Errorf("r.Parse: %w", err)
 	}
 
-	s := render.New(r)
+	s, err := render.New(r)
+	if err != nil {
+		return fmt.Errorf("render.New: %w", err)
+	}
 	err = s.Start(ctx)
 	if err != nil {
 		return fmt.Errorf("s.Start: %w", err)

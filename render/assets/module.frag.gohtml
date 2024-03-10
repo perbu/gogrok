@@ -1,0 +1,14 @@
+{{ define "moduleFragment" }}
+    <div id="module-content">
+        <h3>{{ .Name }}</h3>
+        <p>Packages: {{ .PackagesCount }}, Files: {{ .FilesCount }}, Lines of Code: {{ .LinesOfCode }}</p>
+        <div>Packages:
+            <ul>
+                {{ range .Packages }}
+                    <li><a href="/package/{{ .Path }}" hx-get="/package/{{ .Path }}" hx-target="#package-content">{{ .Name }}</a></li>
+                {{ end }}
+            </ul>
+        </div>
+    </div>
+    <div id="package-content"></div>
+{{ end }}

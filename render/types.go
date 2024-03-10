@@ -1,12 +1,9 @@
 package render
 
-type Frontpage struct {
-	LocalModules    []Module
-	ExternalModules []Module
-}
-
-type Module struct {
-	Path                string
-	Dependencies        []string
-	ReverseDependencies []string
+type ModuleOverview struct {
+	Name          string
+	Path          string
+	PackagesCount int
+	FilesCount    int
+	LinesOfCode   int
 }
