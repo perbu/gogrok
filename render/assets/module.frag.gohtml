@@ -5,7 +5,7 @@
         <div>Packages:
             <ul>
                 {{ range .Packages }}
-                    <li><a href="/package/{{ .Path }}" hx-get="/package/{{ .Path }}" hx-target="#package-content">{{ .Name }}</a></li>
+                    <li><a href="#" hx-get="/package/{{ . }}" hx-target="#package-content">{{ . }}</a></li>
                 {{ end }}
             </ul>
         </div>

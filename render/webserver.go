@@ -8,6 +8,7 @@ import (
 	"github.com/perbu/gogrok/analytics"
 	"html/template"
 	"io/fs"
+	"log/slog"
 	"net/http"
 	"os"
 	"strconv"
@@ -20,16 +21,15 @@ var assets embed.FS
 type Server struct {
 	Repo      *analytics.Repo
 	srv       *http.Server
-	templates map[string]*template.Template
+	templates *template.Template
 }
 
 func New(repo *analytics.Repo) (*Server, error) {
 	const defaultPort = 8080
 	s := &Server{
-		Repo:      repo,
-		templates: make(map[string]*template.Template),
+		Repo: repo,
 	}
-	r := makeMux(s)
+	r := loggingMiddleware(makeMux(s))
 	addr := fmt.Sprintf(":%d", getEnvInt("PORT", defaultPort))
 	srv := &http.Server{
 		Addr:    addr,
@@ -37,7 +37,7 @@ func New(repo *analytics.Repo) (*Server, error) {
 	}
 	s.srv = srv
 
-	tmplts, err := loadTemplates("assets")
+	tmplts, err := loadTemplates()
 	if err != nil {
 		panic("Failed to load templates: " + err.Error())
 	}
@@ -72,28 +72,27 @@ func getEnvInt(key string, defaultValue int) int {
 }
 
 // loadTemplates loads templates from the embedded file system into a map.
-func loadTemplates(dir string) (map[string]*template.Template, error) {
-	templates := make(map[string]*template.Template)
-
-	// Read the directory from the embedded file system.
-	templateFiles, err := fs.ReadDir(assets, dir)
-	if err != nil {
-		return nil, fmt.Errorf("fs.ReadDir: %w", err)
-	}
-
-	// Range over the files and parse them as templates.
-	for _, entry := range templateFiles {
-		// Skip directories and non-gohtml files.
-		if entry.IsDir() || !strings.HasSuffix(entry.Name(), ".gohtml") {
-			continue
-		}
-		fileName := entry.Name()
-		path := dir + "/" + fileName
-		tmpl, err := template.ParseFS(assets, path)
+func loadTemplates() (*template.Template, error) {
+	tmpl := template.New("")
+	err := fs.WalkDir(assets, ".", func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
-			return nil, fmt.Errorf("template.ParseFS: %w", err)
+			return err
 		}
-		templates[fileName] = tmpl
+		if !d.IsDir() && strings.HasSuffix(path, ".gohtml") {
+			fileData, err := fs.ReadFile(assets, path)
+			if err != nil {
+				return err
+			}
+			_, err = tmpl.New(path).Parse(string(fileData))
+			if err != nil {
+				return err
+			}
+			slog.Info("loaded template", "path", path)
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, fmt.Errorf("fs.WalkDir: %w", err)
 	}
-	return templates, nil
+	return tmpl, nil
 }

@@ -4,7 +4,7 @@
         <ul>
             {{ range .Modules }}
                 <li>
-                    <a href="/module/{{ .Path }}" hx-get="/module/{{ .Path }}" hx-target="#main-content">{{ .Name }}</a> - Packages: {{ .PackagesCount }}, Files: {{ .FilesCount }}, Lines of Code: {{ .LinesOfCode }}
+                    <a href="#" hx-get="/module/{{ .Path }}" hx-target="#main-content">{{ .Path }}</a> - Packages: {{ .PackagesCount }}, Files: {{ .FilesCount }}, Lines of Code: {{ .LinesOfCode }}
                     <button hx-get="/dependencies/{{ .Path }}" hx-target="#main-content">Dependencies</button>
                     <button hx-get="/reverse-dependencies/{{ .Path }}" hx-target="#main-content">Reverse Dependencies</button>
                 </li>

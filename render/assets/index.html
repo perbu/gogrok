@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go Modules Dependency Viewer</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC" crossorigin="anonymous"></script></head>
+<body>
+<h1>Gogrok</h1>
+<h2>Go Modules InterDependency Analytics</h2>
+<hr/>
+<div>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a href="#" class="navbar-brand" hx-get="/local" hx-target="#main-content">Local Modules</a>
+            <a href="#" class="navbar-brand" hx-get="/external" hx-target="#main-content">External Modules</a>
+            <a href="#" class="navbar-brand" hx-get="/about" hx-target="#main-content">About</a>
+        </div>
+    </nav>
+</div>
+<hr/>
+
+<!-- Main Content goes here: -->
+<div class="container" id="main-content">
+No content here yet.
+</div>
+<hr/>
+<div class="container">
+    <footer>
+        <p>&copy; 2024 Per Buer</p>
+    </footer>
+
+</body>
+</html>
