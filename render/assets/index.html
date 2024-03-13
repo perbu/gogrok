@@ -10,8 +10,8 @@
             crossorigin="anonymous"></script>
 </head>
 <body>
-<h1>Gogrok</h1>
-<h2>Go Modules InterDependency Analytics</h2>
+<h1>Gogrok - Go Interdependency analysis</h1>
+<div id="htmx-alert" hidden class="htmxerror" ></div>
 <hr/>
 <div>
     <!-- Navigation -->
@@ -19,7 +19,7 @@
         <div class="container">
             <a href="#" class="navbar-brand" hx-get="/local" hx-target="#module">Local Modules</a>
             <a href="#" class="navbar-brand" hx-get="/external" hx-target="#module">External Modules</a>
-            <a href="#" class="navbar-brand" hx-get="/about" hx-target="#module">About</a>
+            <a href="#" class="navbar-brand" hx-get="/aboutx" hx-target="#module">About</a>
         </div>
     </nav>
 </div>
@@ -37,6 +37,27 @@
     <footer>
         <p>&copy; 2024 Per Buer</p>
     </footer>
-
+</div>
+<script>
+    document.body.addEventListener('htmx:afterRequest', function (evt) {
+        const errorTarget = document.getElementById("htmx-alert")
+        if (evt.detail.successful) {
+            // Successful request, clear out alert
+            errorTarget.setAttribute("hidden", "true")
+            errorTarget.innerText = "";
+        } else if (evt.detail.failed && evt.detail.xhr) {
+            // Server error with response contents, equivalent to htmx:responseError
+            console.warn("Server error", evt.detail)
+            const xhr = evt.detail.xhr;
+            errorTarget.innerText = `Unexpected server error: ${xhr.status} - ${xhr.statusText}`;
+            errorTarget.removeAttribute("hidden");
+        } else {
+            // Unspecified failure, usually caused by network error
+            console.error("Unexpected htmx error", evt.detail)
+            errorTarget.innerText = "Unexpected error, check your connection and try to refresh the page.";
+            errorTarget.removeAttribute("hidden");
+        }
+    });
+</script>
 </body>
 </html>

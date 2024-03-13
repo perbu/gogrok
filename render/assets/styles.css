@@ -43,3 +43,69 @@ a {
 .stats-label {
     font-weight: bold;
 }
+
+/* Alert style for HTMX errors - bright red text on yellow background*/
+.htmxerror {
+    color: #ff0000;
+    background-color: #ffff00;
+}
+
+/* Base styling scoped to code container */
+.code-container {
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    font-size: 16px;
+    color: #333333;
+}
+
+/* Code */
+.code-container pre.go-code {
+    background-color: #ffffff;
+    border: 1px solid #dddddd;
+    overflow: auto;
+    padding: 10px;
+}
+
+/* Now prefix all your other classes with .code-container to scope them correctly */
+.code-container .go-keyword {
+    color: #0000FF;
+    font-weight: bold;
+}
+
+.code-container .go-comment {
+    color: #008000;
+    font-style: italic;
+}
+
+
+/* Strings */
+.code-container .go-string {
+    color: #A31515; /* Dark red */
+}
+
+/* Preprocessor statements (e.g., import, package) */
+.code-container .go-preprocessor {
+    color: #FF4500;
+}
+
+/* Types (e.g., int, bool, custom types) */
+.code-container .go-type {
+    color: #2B91AF;
+}
+
+.code-container .go-literal {
+    color: #00008B; /* Dark blue */
+}
+
+.code-container .go-identifier {
+    color: #6A3E3E;
+}
+
+/* Functions and method names */
+.code-container .go-function {
+    color: #008080;
+}
+
+/* Operators (e.g., +, -, *, /) */
+.code-container .go-operator {
+    color: #000000; /* Black, can adjust if needed */
+}

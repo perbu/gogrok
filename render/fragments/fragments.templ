@@ -85,7 +85,7 @@ templ Module(mod *analytics.Module) {
 
 
 templ Package(pkg *analytics.Package)  {
-    <div id="file">
+    <div id="package">
         <h3>{pkg.Name}</h3>
         <p>
             {slen(pkg.Files)} files, {s(pkg.NoOfLines)} lines.
