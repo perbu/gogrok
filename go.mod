@@ -3,6 +3,8 @@ module github.com/perbu/gogrok
 go 1.22.1
 
 require (
+	github.com/a-h/templ v0.2.598
+	github.com/dustin/go-humanize v1.0.1
 	github.com/go-git/go-git/v5 v5.11.0
 	github.com/gorilla/mux v1.8.1
 	golang.org/x/mod v0.16.0

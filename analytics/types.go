@@ -28,6 +28,7 @@ type Package struct {
 	Module              *Module    // reference to the module
 	Files               []*File    // list of files in the package
 	ReverseDependencies []*Package // list of packages that depend on this package
+	NoOfLines           int
 }
 
 type File struct {

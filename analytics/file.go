@@ -34,6 +34,7 @@ func (p *Package) AddFile(name string, file *ast.File) *File {
 		Ast:     file,
 	}
 	p.Files = append(p.Files, f)
+	p.NoOfLines += len(lines)
 	return f
 }
 

@@ -1,0 +1,111 @@
+package fragments
+
+import (
+	"github.com/perbu/gogrok/analytics"
+)
+
+templ About() {
+    <div>
+        <h1>About Grogrok</h1>
+        <p>Gogrok is a cross-module analysis tool for Go.</p>
+    </div>
+    }
+
+
+templ ExternalModules(mods []analytics.Module) {
+    <div id="module">
+    <h2>External Modules</h2>
+    <ul>
+    for _, mod := range mods {
+        <h3>
+        {mod.Path}
+        </h3>
+         <ul>
+            for _, rmod := range mod.ReverseModuleDependencies {
+                <li>{rmod.Path}</li>
+            }
+        </ul>
+    }
+    </ul>
+    </div>
+    <div class="container" id="package">
+      <!-- placeholder for package details -->
+    </div>
+}
+
+templ LocalModules(mods []analytics.Module) {
+    <div id="module">
+    <h2>Local Modules</h2>
+    <ul>
+    for _, mod := range mods {
+        <li>
+            <a href="#" hx-get={moduleUrl(&mod)} hx-target="#module"
+            >{mod.Path}</a> - {mod.Version} - {slen(mod.Dependencies)} dependencies, has
+            {slen(mod.ReverseModuleDependencies)} reverse dependencies. {s(mod.NoOfFiles)} files, {s(mod.NoOfLines)} lines.
+        </li>
+    }
+    </ul>
+    </div>
+    <div class="container" id="package">
+      <!-- placeholder for package details -->
+    </div>
+}
+
+templ Module(mod *analytics.Module) {
+    <div id="module">
+        <h3>{mod.Path}</h3>
+        <p>
+            Version: {mod.Version}
+        </p>
+        <p>
+            {slen(mod.Dependencies)} dependencies, has {slen(mod.ReverseModuleDependencies)} reverse dependencies.
+        </p>
+        <p>
+            {s(mod.NoOfFiles)} files, {s(mod.NoOfLines)} lines.
+        </p>
+        <h4>Packages</h4>
+        for _, pkg := range mod.Packages {
+            <a href="#" hx-get={packageUrl(pkg)} hx-target="#package">[{pkg.Name}]</a>&nbsp;
+        }
+    </div>
+    <div class="container" id="package">
+      <!-- placeholder for package details -->
+    </div>
+}
+
+
+templ Package(pkg *analytics.Package)  {
+    <div id="file">
+        <h3>{pkg.Name}</h3>
+        <p>
+            {slen(pkg.Files)} files, {s(pkg.NoOfLines)} lines.
+        </p>
+        <h4>Reverse Dependencies</h4>
+        <ul>
+        for _, rpd := range pkg.ReverseDependencies {
+           <li>{rpd.Module.Path} / {rpd.Name}</li>
+        }
+        </ul>
+        <h4>Files</h4>
+        for _, f := range pkg.Files {
+            <a href="#" hx-get={fileUrl(f)} hx-target="#file">[{f.Name}]</a>&nbsp;
+        }
+    </div>
+    <div class="container" id="file">
+      <!-- placeholder for file details -->
+    </div>
+}
+
+templ File(f *analytics.File) {
+    <div id="file">
+        <h3>{f.Name}</h3>
+        <h4>Content</h4>
+        <code>
+        <pre>
+        for _, l := range f.Lines {
+            {l}<br/>
+        }
+        </pre>
+        </code>
+    </div>
+}

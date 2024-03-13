@@ -10,3 +10,6 @@ code
 build/
 # The database
 db.sqlite3
+
+# air:
+/tmp

@@ -18,9 +18,9 @@ func makeMux(s *Server) *mux.Router {
 	gmux.HandleFunc("/local", s.handleLocalModuleList).Methods(http.MethodGet)
 	gmux.HandleFunc("/external", s.handleExternalModuleList).Methods(http.MethodGet)
 	gmux.HandleFunc("/about", s.handleAbout).Methods(http.MethodGet)
-	gmux.HandleFunc("/module/{path:.*}", s.handleModule).Methods(http.MethodGet)
+	gmux.HandleFunc("/module/{module:.*}", s.handleModule).Methods(http.MethodGet)
 	gmux.HandleFunc("/package/{module:[^?]*}", s.handlePackage).Methods(http.MethodGet)
-	gmux.HandleFunc("file/{module:[^?]*}", s.handleFile).Methods(http.MethodGet)
+	gmux.HandleFunc("/file/{module:[^?]*}", s.handleFile).Methods(http.MethodGet)
 	return gmux
 }
 

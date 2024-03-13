@@ -6,8 +6,12 @@ import (
 	"github.com/perbu/gogrok/analytics"
 	"github.com/perbu/gogrok/render"
 	"io"
+	"log/slog"
 	"os"
 	"os/signal"
+	"runtime"
+
+	"github.com/dustin/go-humanize"
 )
 
 func main() {
@@ -29,6 +33,8 @@ func run(ctx context.Context, output io.Writer, env, args []string) error {
 	if err != nil {
 		return fmt.Errorf("r.Parse: %w", err)
 	}
+	// log memory usage so far:
+	logMemoryUsage()
 
 	s, err := render.New(r)
 	if err != nil {
@@ -40,4 +46,17 @@ func run(ctx context.Context, output io.Writer, env, args []string) error {
 	}
 
 	return nil
+}
+
+func logMemoryUsage() {
+	var m runtime.MemStats
+	runtime.ReadMemStats(&m)
+	slog.Info("Heap Stats",
+		"HeapAlloc", humanize.Bytes(m.HeapAlloc),
+		"HeapSys", humanize.Bytes(m.HeapSys),
+		"HeapIdle", humanize.Bytes(m.HeapIdle),
+		"HeapInuse", humanize.Bytes(m.HeapInuse),
+		"HeapReleased", humanize.Bytes(m.HeapReleased),
+		"HeapObjects", humanize.Comma(int64(m.HeapObjects)),
+	)
 }

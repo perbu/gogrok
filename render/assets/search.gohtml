@@ -1,6 +1,0 @@
-{{ define "search" }}
-    <div id="search-container">
-        <input type="text" id="search-input" name="search"
-               hx-get="{{ .TargetUrl }}" hx-trigger="keyup changed delay:200ms" hx-target="#module" hx-swap="outerHTML">
-    </div>
-{{ end }}
