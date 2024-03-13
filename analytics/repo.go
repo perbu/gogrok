@@ -30,6 +30,9 @@ func (r *Repo) Parse() error {
 		if !repoDir.IsDir() {
 			continue
 		}
+		if repoDir.Name() == "n2-metadata" {
+			fmt.Println("Metadata found")
+		}
 		modulePath := path.Join(r.basePath, repoDir.Name())
 		err := r.ParseMod(modulePath)
 		if err != nil {
@@ -43,6 +46,9 @@ func (r *Repo) Parse() error {
 		mod, ok := r.GetModule(name)
 		if !ok {
 			return fmt.Errorf("r.GetModule(%s): not found", name)
+		}
+		if name == "github.com/celerway/n2-metadata" {
+			fmt.Println("Metadata found")
 		}
 		// Load source code for local modules
 		if mod.Type == DepTypeLocal {

@@ -63,6 +63,16 @@ templ Module(mod *analytics.Module) {
         <p>
             {s(mod.NoOfFiles)} files, {s(mod.NoOfLines)} lines.
         </p>
+        <p>
+        Dependencies:
+        <ul>
+        for _, dep := range mod.Dependencies {
+            <li>
+                <a href="#" hx-get={moduleUrl(dep)} hx-target="#module">{dep.Path}</a>
+            </li>
+        }
+        </ul>
+        </p>
         <h4>Packages</h4>
         for _, pkg := range mod.Packages {
             <a href="#" hx-get={packageUrl(pkg)} hx-target="#package">[{pkg.Name}]</a>&nbsp;

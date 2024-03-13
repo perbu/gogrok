@@ -77,6 +77,7 @@ func (r *Repo) ParseMod(modulePath string) error {
 	}
 	m.Type = DepTypeLocal
 	m.Version = latestVersion
+	m.Location = modulePath
 	for _, require := range file.Require {
 		ref, ok := r.modules[require.Mod.Path]
 		switch ok {

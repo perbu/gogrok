@@ -10,6 +10,9 @@ import (
 )
 
 func (m *Module) LoadSource() error {
+	if m.Location == "" {
+		return fmt.Errorf("module (%s) location is empty", m.Path)
+	}
 	err := filepath.Walk(m.Location, func(path string, info os.FileInfo, err error) error {
 		if info == nil {
 			return nil
