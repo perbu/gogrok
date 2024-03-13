@@ -1,8 +1,12 @@
 package analytics
 
+import "go/ast"
+
 type Repo struct {
-	modules  map[string]*Module
-	basePath string
+	modules   map[string]*Module
+	basePath  string
+	NoOfLines int
+	NoOfFiles int
 }
 
 type Module struct {
@@ -14,6 +18,8 @@ type Module struct {
 	Type                      DepType    // either a local (on-disk) or external (remote) module
 	Repo                      *Repo      // reference to the repo
 	ReverseModuleDependencies []*Module  // List of modules that depend on this module
+	NoOfFiles                 int
+	NoOfLines                 int
 }
 
 type Package struct {
@@ -30,4 +36,5 @@ type File struct {
 	Package *Package   // reference to the package this file belongs to
 	Module  *Module    // reference to the module
 	Lines   []string   // file contents, split into lines, allow for references to files and lines
+	Ast     *ast.File
 }

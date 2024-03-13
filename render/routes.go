@@ -14,8 +14,13 @@ func makeMux(s *Server) *mux.Router {
 	// mux.HandleFunc("/", notFoundHandler)
 	gmux.HandleFunc("/", makeStaticHandler("assets/index.html")).Methods(http.MethodGet)
 	// serve the styles.css directly from the assets embedded filesystem:
-	gmux.HandleFunc("/style.css", makeStaticHandler("assets/styles.css")).Methods(http.MethodGet)
-	gmux.HandleFunc("/local", s.handleLocalModuleOverview).Methods(http.MethodGet)
+	gmux.HandleFunc("/styles.css", makeStaticHandler("assets/styles.css")).Methods(http.MethodGet)
+	gmux.HandleFunc("/local", s.handleLocalModuleList).Methods(http.MethodGet)
+	gmux.HandleFunc("/external", s.handleExternalModuleList).Methods(http.MethodGet)
+	gmux.HandleFunc("/about", s.handleAbout).Methods(http.MethodGet)
+	gmux.HandleFunc("/module/{path:.*}", s.handleModule).Methods(http.MethodGet)
+	gmux.HandleFunc("/package/{module:[^?]*}", s.handlePackage).Methods(http.MethodGet)
+	gmux.HandleFunc("file/{module:[^?]*}", s.handleFile).Methods(http.MethodGet)
 	return gmux
 }
 

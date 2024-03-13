@@ -2,13 +2,14 @@ package analytics
 
 import (
 	"bufio"
+	"go/ast"
 	"os"
 	"path"
 	"strings"
 )
 
 // AddFile adds a file to the package
-func (p *Package) AddFile(name string) *File {
+func (p *Package) AddFile(name string, file *ast.File) *File {
 	for _, file := range p.Files {
 		if file.Name == name {
 			// should never happen
@@ -30,6 +31,7 @@ func (p *Package) AddFile(name string) *File {
 		Package: p,
 		Module:  p.Module,
 		Lines:   lines,
+		Ast:     file,
 	}
 	p.Files = append(p.Files, f)
 	return f

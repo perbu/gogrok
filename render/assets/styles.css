@@ -1,3 +1,4 @@
+/* Existing styles */
 body {
     font-family: Arial, sans-serif;
     margin: 40px;
@@ -26,15 +27,19 @@ a {
     color: #0275d8;
     text-decoration: none;
 }
+
+/* New styles */
 .module-stats {
     display: flex;
     justify-content: space-between;
     margin-top: 5px;
 }
 .module-stats div {
-    margin-right: 20px;
+    width: 50%; /* Ensure each list takes 50% of the horizontal space */
+}
+.stats-list {
+    padding-left: 20px; /* Adjust padding as needed for alignment */
 }
 .stats-label {
     font-weight: bold;
 }
-

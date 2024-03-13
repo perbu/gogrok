@@ -1,0 +1,14 @@
+{{ define "module" }}
+    <div id="module">
+        <h3>{{ .Path }}</h3>
+        <p>Version: {{ .Version }}</p>
+        <p>Packages: {{ .PackagesCount }}, Files: {{ .FilesCount }}, Lines of Code: {{ .LinesOfCode }}</p>
+        <div>Packages:
+            {{ range .Packages }}
+                <a href="#" hx-get="/package/{{ .Module }}?package={{ .Name }}" hx-target="#package">
+                    [{{ .Name }}]</a>&nbsp;
+            {{ end }}
+        </div>
+    </div>
+    <div id="package"></div>
+{{ end }}
