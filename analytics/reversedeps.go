@@ -23,6 +23,9 @@ func (r *Repo) reverseDeps() {
 				for _, importedPkg := range file.Imports {
 					// Avoid adding duplicate reverse dependencies
 					if _, exists := packageReverseDepsMap[importedPkg][pkg]; !exists {
+						if _, exists := packageReverseDepsMap[importedPkg]; !exists {
+							packageReverseDepsMap[importedPkg] = make(map[*Package]struct{})
+						}
 						packageReverseDepsMap[importedPkg][pkg] = struct{}{}
 						importedPkg.ReverseDependencies = append(importedPkg.ReverseDependencies, pkg)
 					}

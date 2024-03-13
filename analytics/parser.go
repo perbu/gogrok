@@ -54,6 +54,8 @@ func (m *Module) LoadSource() error {
 			// Find Import Specs
 			imp, ok := n.(*ast.ImportSpec)
 			if ok {
+				// strip quotes
+				imp.Path.Value = imp.Path.Value[1 : len(imp.Path.Value)-1]
 				f.AddImport(imp.Path.Value)
 			}
 			return true

@@ -47,7 +47,10 @@ func (f *File) AddImport(name string) {
 			panic("import already exists")
 		}
 	}
-
+	// ignore if this in an internal import within the same module:
+	if strings.HasPrefix(name, f.Module.Path) {
+		return
+	}
 	// find the module name:
 	mName, ok := f.Module.Repo.FindModule(name)
 	if !ok {
@@ -56,14 +59,17 @@ func (f *File) AddImport(name string) {
 	}
 	mod, ok := f.Module.Repo.GetModule(mName)
 	if !ok {
-		// should never happen
-		panic("module not found: " + mName)
+		panic("GetModule failed " + mName)
+	}
+	// skip if the package isn't local:
+	if mod.Type != DepTypeLocal {
+		return
 	}
 	pack := packageNameFromImportPath(name)
 	p, ok := mod.GetPackage(pack)
 	if !ok {
-		// should never happen
-		panic("package not found: " + pack)
+		// package is liked missing from the latest version of the module, we just ignore it
+		return
 	}
 	f.Imports = append(f.Imports, p)
 }
