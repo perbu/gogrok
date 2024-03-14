@@ -22,7 +22,7 @@ templ ExternalModules(mods []analytics.Module) {
         </h3>
          <ul>
             for _, rmod := range mod.ReverseModuleDependencies {
-                <li>{rmod.Path}</li>
+                <li><a href="#" hx-get={moduleUrl(rmod)} hx-target="#module">{rmod.Path}</a></li>
             }
         </ul>
     }
@@ -63,6 +63,17 @@ templ Module(mod *analytics.Module) {
         <p>
             {s(mod.NoOfFiles)} files, {s(mod.NoOfLines)} lines.
         </p>
+        <p>
+        Reverse dependencies:
+        <ul>
+        for _, rdep := range mod.ReverseModuleDependencies {
+            <li>
+                <a href="#" hx-get={moduleUrl(rdep)} hx-target="#module">{rdep.Path}</a>
+            </li>
+        }
+        </ul>
+        </p>
+
         <p>
         Dependencies:
         <ul>
