@@ -40,8 +40,8 @@ templ LocalModules(mods []analytics.Module) {
     for _, mod := range mods {
         <li>
             <a href="#" hx-get={moduleUrl(&mod)} hx-target="#module"
-            >{mod.Path}</a> - {mod.Version} - {slen(mod.Dependencies)} dependencies, has
-            {slen(mod.ReverseModuleDependencies)} reverse dependencies. {s(mod.NoOfFiles)} files, {s(mod.NoOfLines)} lines.
+            >{mod.Path}</a> - {mod.Latest()} - {slen(mod.Dependencies)} dependencies, has
+            {slen(mod.ReverseModuleDependencies)} reverse dependencies. {s(mod.Files())} files, {s(mod.Lines())} lines.
         </li>
     }
     </ul>
@@ -55,13 +55,16 @@ templ Module(mod *analytics.Module) {
     <div id="module">
         <h3>{mod.Path}</h3>
         <p>
-            Version: {mod.Version}
+            Versions:
+            for _, v := range mod.GetVersions() {
+                {v}&nbsp;
+            }
         </p>
         <p>
             {slen(mod.Dependencies)} dependencies, has {slen(mod.ReverseModuleDependencies)} reverse dependencies.
         </p>
         <p>
-            {s(mod.NoOfFiles)} files, {s(mod.NoOfLines)} lines.
+            {s(mod.Files())} files, {s(mod.Lines())} lines.
         </p>
         <p>
         Reverse dependencies:
@@ -99,7 +102,7 @@ templ Package(pkg *analytics.Package)  {
     <div id="package">
         <h3>{pkg.Name}</h3>
         <p>
-            {slen(pkg.Files)} files, {s(pkg.NoOfLines)} lines.
+            {s(pkg.Files())} files, {s(pkg.Lines())} lines.
         </p>
         <h4>Reverse Dependencies</h4>
         <ul>
@@ -108,7 +111,7 @@ templ Package(pkg *analytics.Package)  {
         }
         </ul>
         <h4>Files</h4>
-        for _, f := range pkg.Files {
+        for _, f := range pkg.GetFiles() {
             <a href="#" hx-get={fileUrl(f)} hx-target="#file">[{f.Name}]</a>&nbsp;
         }
     </div>
@@ -123,7 +126,7 @@ templ File(f *analytics.File) {
         <h4>Content</h4>
         <code>
         <pre>
-        for _, l := range f.Lines {
+        for _, l := range f.GetSource() {
             {l}<br/>
         }
         </pre>

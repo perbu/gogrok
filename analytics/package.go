@@ -1,19 +1,26 @@
 package analytics
 
-func (m *Module) GetPackage(name string) (*Package, bool) {
-	for _, pkg := range m.Packages {
-		if pkg.Name == name {
-			return pkg, true
+func (p *Package) Lines() int {
+	lines := 0
+	for _, file := range p.files {
+		lines += len(file.source)
+	}
+	return lines
+}
+
+func (p *Package) Files() int {
+	return len(p.files)
+}
+
+func (p *Package) GetFiles() []*File {
+	return p.files
+}
+
+func (p *Package) GetFile(name string) (*File, bool) {
+	for _, file := range p.files {
+		if file.Name == name {
+			return file, true
 		}
 	}
 	return nil, false
-}
-
-func (m *Module) AddPackage(p *Package) {
-	for _, pkg := range m.Packages {
-		if pkg.Name == p.Name {
-			return
-		}
-	}
-	m.Packages = append(m.Packages, p)
 }

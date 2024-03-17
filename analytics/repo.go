@@ -50,11 +50,9 @@ func (r *Repo) Parse() error {
 			if err != nil {
 				return fmt.Errorf("mod.LoadSource: %w", err)
 			}
-			r.NoOfLines += mod.NoOfLines
-			r.NoOfFiles += mod.NoOfFiles
 		}
 	}
-	slog.Info("parsed source code", "duration", time.Since(start), "lines", r.NoOfLines, "files", r.NoOfFiles)
+	slog.Info("parsed source code", "duration", time.Since(start))
 	// Populate reverse dependencies, both packages and modules.
 	start = time.Now()
 	r.reverseDeps()

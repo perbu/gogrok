@@ -19,7 +19,7 @@ func (r *Repo) reverseDeps() {
 			}
 
 			// Populate Reverse Package Dependencies using file imports
-			for _, file := range pkg.Files {
+			for _, file := range pkg.files {
 				for _, importedPkg := range file.Imports {
 					// Avoid adding duplicate reverse dependencies
 					if _, exists := packageReverseDepsMap[importedPkg][pkg]; !exists {

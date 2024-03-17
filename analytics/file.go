@@ -10,7 +10,7 @@ import (
 
 // AddFile adds a file to the package
 func (p *Package) AddFile(name string, file *ast.File) *File {
-	for _, file := range p.Files {
+	for _, file := range p.files {
 		if file.Name == name {
 			// should never happen
 			panic("file already exists")
@@ -30,11 +30,10 @@ func (p *Package) AddFile(name string, file *ast.File) *File {
 		Imports: make([]*Package, 0),
 		Package: p,
 		Module:  p.Module,
-		Lines:   lines,
-		Ast:     file,
+		source:  lines,
+		ast:     file,
 	}
-	p.Files = append(p.Files, f)
-	p.NoOfLines += len(lines)
+	p.files = append(p.files, f)
 	return f
 }
 
@@ -68,7 +67,7 @@ func (f *File) AddImport(name string) {
 	pack := packageNameFromImportPath(name)
 	p, ok := mod.GetPackage(pack)
 	if !ok {
-		// package is liked missing from the latest version of the module, we just ignore it
+		// package is liked missing from the latest versions of the module, we just ignore it
 		return
 	}
 	f.Imports = append(f.Imports, p)
@@ -100,4 +99,12 @@ func readFile(path string) ([]string, error) {
 	}
 
 	return lines, nil // Return the slice of lines and a nil error.
+}
+
+func (f *File) Lines() int {
+	return len(f.source)
+}
+
+func (f *File) GetSource() []string {
+	return f.source
 }

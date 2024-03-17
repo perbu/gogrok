@@ -3,32 +3,27 @@ package analytics
 import "go/ast"
 
 type Repo struct {
-	modules   map[string]*Module
-	basePath  string
-	NoOfLines int
-	NoOfFiles int
+	modules  map[string]*Module
+	basePath string
 }
 
 type Module struct {
 	Path                      string     // module path ie. github.com/perbu/gogrok
 	Location                  string     // file path
-	Version                   string     // module version
+	versions                  []string   // module versions
 	Dependencies              []*Module  // list of dependencies
 	Packages                  []*Package // list of packages in the module
 	Type                      DepType    // either a local (on-disk) or external (remote) module
 	Repo                      *Repo      // reference to the repo
 	ReverseModuleDependencies []*Module  // List of modules that depend on this module
-	NoOfFiles                 int
-	NoOfLines                 int
 }
 
 type Package struct {
 	Name                string     // package name
 	Location            string     // file path, relative to the module
 	Module              *Module    // reference to the module
-	Files               []*File    // list of files in the package
+	files               []*File    // list of files in the package
 	ReverseDependencies []*Package // list of packages that depend on this package
-	NoOfLines           int
 }
 
 type File struct {
@@ -36,6 +31,6 @@ type File struct {
 	Imports []*Package // list of imported packages
 	Package *Package   // reference to the package this file belongs to
 	Module  *Module    // reference to the module
-	Lines   []string   // file contents, split into lines, allow for references to files and lines
-	Ast     *ast.File
+	source  []string   // file contents, split into lines, allow for references to files and lines
+	ast     *ast.File
 }

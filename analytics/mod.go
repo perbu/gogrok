@@ -6,6 +6,7 @@ import (
 	mf "golang.org/x/mod/modfile"
 	"os"
 	"path/filepath"
+	"slices"
 )
 
 type DepType int
@@ -73,24 +74,27 @@ func (r *Repo) ParseMod(modulePath string) error {
 			Dependencies:              make([]*Module, 0, len(file.Require)),
 			Repo:                      r,
 			ReverseModuleDependencies: make([]*Module, 0),
+			versions:                  make([]string, 0),
 		}
 	}
 	m.Type = DepTypeLocal
-	m.Version = latestVersion
+	m.AddVersion(latestVersion)
 	m.Location = modulePath
 	for _, require := range file.Require {
 		ref, ok := r.modules[require.Mod.Path]
 		switch ok {
 		case true:
 			m.Dependencies = append(m.Dependencies, ref)
+			ref.AddVersion(require.Mod.Version)
 		case false:
 			newDep := &Module{
 				Path:                      require.Mod.Path,
-				Version:                   require.Mod.Version,
 				Type:                      DepTypeExternal, // all dependencies are external until proven otherwise
 				Repo:                      r,
 				ReverseModuleDependencies: make([]*Module, 0),
+				versions:                  make([]string, 0),
 			}
+			newDep.AddVersion(require.Mod.Version)
 			m.Dependencies = append(m.Dependencies, newDep)
 			r.modules[require.Mod.Path] = newDep
 		}
@@ -99,19 +103,60 @@ func (r *Repo) ParseMod(modulePath string) error {
 	return nil
 }
 
-func (m *Module) GetStringDependencies() []string {
-	depStrings := make([]string, 0, len(m.Dependencies))
-	for _, dep := range m.Dependencies {
-		depStrings = append(depStrings, dep.Path)
+func (m *Module) Lines() int {
+	lines := 0
+	for _, pkg := range m.Packages {
+		lines += pkg.Lines()
 	}
-	return depStrings
-
+	return lines
 }
 
-func (m *Module) GetStringReverseDependencies() []string {
-	depStrings := make([]string, 0, len(m.ReverseModuleDependencies))
-	for _, dep := range m.ReverseModuleDependencies {
-		depStrings = append(depStrings, dep.Path)
+func (m *Module) Files() int {
+	files := 0
+	for _, pkg := range m.Packages {
+		files += pkg.Files()
 	}
-	return depStrings
+	return files
+}
+
+// Package operations on the module:
+
+func (m *Module) GetPackage(name string) (*Package, bool) {
+	for _, pkg := range m.Packages {
+		if pkg.Name == name {
+			return pkg, true
+		}
+	}
+	return nil, false
+}
+
+func (m *Module) AddPackage(p *Package) {
+	for _, pkg := range m.Packages {
+		if pkg.Name == p.Name {
+			return
+		}
+	}
+	m.Packages = append(m.Packages, p)
+}
+
+func (m *Module) AddVersion(version string) {
+	for _, v := range m.versions {
+		if v == version {
+			return
+		}
+	}
+	m.versions = append(m.versions, version)
+	// sort the versions
+	slices.Sort(m.versions)
+}
+
+func (m *Module) GetVersions() []string {
+	return m.versions
+}
+
+func (m *Module) Latest() string {
+	if len(m.versions) > 0 {
+		return m.versions[len(m.versions)-1]
+	}
+	return ""
 }

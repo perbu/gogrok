@@ -23,7 +23,6 @@ func (m *Module) LoadSource() error {
 		if info.IsDir() || filepath.Ext(path) != ".go" {
 			return nil
 		}
-		m.NoOfFiles++
 		fset := token.NewFileSet()
 		astFile, err := parser.ParseFile(fset, path, nil, parser.ParseComments)
 		if err != nil {
@@ -42,7 +41,7 @@ func (m *Module) LoadSource() error {
 				Name:                astFile.Name.Name,
 				Location:            rpath,
 				Module:              m,
-				Files:               make([]*File, 0),
+				files:               make([]*File, 0),
 				ReverseDependencies: make([]*Package, 0),
 			}
 			m.AddPackage(p)
@@ -60,7 +59,6 @@ func (m *Module) LoadSource() error {
 			}
 			return true
 		})
-		m.NoOfLines += len(f.Lines)
 		return nil
 	})
 	if err != nil {

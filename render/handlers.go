@@ -133,7 +133,7 @@ func (s *Server) handleFile(writer http.ResponseWriter, request *http.Request) {
 	var file *analytics.File
 	for _, pkg := range mod.Packages {
 		if pkg.Name == packageName {
-			for _, f := range pkg.Files {
+			for _, f := range pkg.GetFiles() {
 				if f.Name == fileName {
 					file = f
 					break
