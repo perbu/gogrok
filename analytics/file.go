@@ -3,6 +3,7 @@ package analytics
 import (
 	"bufio"
 	"go/ast"
+	"go/token"
 	"os"
 	"path"
 	"strings"
@@ -107,4 +108,38 @@ func (f *File) Lines() int {
 
 func (f *File) GetSource() []string {
 	return f.source
+}
+
+// complexityVisitor implements the ast.Visitor interface, counting decision points.
+type complexityVisitor struct {
+	complexity int
+}
+
+// Visit inspects the AST nodes and calculates complexity based on certain node types.
+func (v *complexityVisitor) Visit(n ast.Node) ast.Visitor {
+	if n == nil {
+		return nil
+	}
+	switch n.(type) {
+	case *ast.IfStmt, *ast.ForStmt, *ast.RangeStmt, *ast.SwitchStmt, *ast.TypeSwitchStmt, *ast.SelectStmt:
+		v.complexity++
+	case *ast.CaseClause:
+		// Each case in a switch is a new path
+		v.complexity++
+	case *ast.BinaryExpr:
+		// Increase complexity for logical AND and OR operations
+		be := n.(*ast.BinaryExpr)
+		if be.Op == token.LAND || be.Op == token.LOR {
+			v.complexity++
+		}
+	}
+
+	return v
+}
+
+// CalculateComplexity walks the AST of a Go file to calculate its cyclomatic complexity.
+func (f *File) CalculateComplexity() int {
+	v := &complexityVisitor{}
+	ast.Walk(v, f.ast)
+	return v.complexity + 1 // Adding 1 for the entry point
 }

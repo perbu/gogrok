@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 )
 
+// LoadSource loads the source code for a local module.
 func (m *Module) LoadSource() error {
 	if m.Location == "" {
 		return fmt.Errorf("module (%s) location is empty", m.Path)
