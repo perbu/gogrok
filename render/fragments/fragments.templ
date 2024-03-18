@@ -2,6 +2,7 @@ package fragments
 
 import (
 	"github.com/perbu/gogrok/analytics"
+	"fmt"
 )
 
 templ About() {
@@ -40,7 +41,7 @@ templ LocalModules(mods []analytics.Module) {
     for _, mod := range mods {
         <li>
             <a href="#" hx-get={moduleUrl(&mod)} hx-target="#module"
-            >{mod.Path}</a> - {mod.Latest()} - {slen(mod.Dependencies)} dependencies, has
+            >{mod.Path}</a> - {mod.Latest()} - Complexity {fmt.Sprintf("%.1f", mod.CalculateComplexity())} -  {slen(mod.Dependencies)} dependencies, has
             {slen(mod.ReverseModuleDependencies)} reverse dependencies. {s(mod.Files())} files, {s(mod.Lines())} lines.
         </li>
     }
@@ -88,9 +89,14 @@ templ Module(mod *analytics.Module) {
         </ul>
         </p>
         <h4>Packages</h4>
+        <ul>
         for _, pkg := range mod.Packages {
-            <a href="#" hx-get={packageUrl(pkg)} hx-target="#package">[{pkg.Name}]</a>&nbsp;
+            <li><a href="#" hx-get={packageUrl(pkg)} hx-target="#package">[{pkg.Name}]</a>
+            {s(pkg.Files())} files, {s(pkg.Lines())} lines. Complexity {fmt.Sprintf("%.1f", pkg.CalculateComplexity())}
+            {fmt.Sprintf("%.0f%%", pkg.Generated()*100)} generated code.
+            </li>
         }
+        </ul>
     </div>
     <div class="container" id="package">
       <!-- placeholder for package details -->

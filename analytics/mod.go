@@ -66,3 +66,11 @@ func (m *Module) Latest() string {
 	}
 	return ""
 }
+
+func (m *Module) CalculateComplexity() float32 {
+	complexity := float32(0)
+	for _, pkg := range m.Packages {
+		complexity += pkg.CalculateComplexity()
+	}
+	return complexity / float32(len(m.Packages))
+}

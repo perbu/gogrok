@@ -7,8 +7,15 @@ import (
 	"strconv"
 )
 
-func s(i int) string {
-	return strconv.Itoa(i)
+func s(number any) string {
+	switch typedNumber := number.(type) {
+	case int:
+		return strconv.Itoa(number.(int))
+	case int64:
+		return strconv.FormatInt(typedNumber, 10)
+	default:
+		return fmt.Sprintf("%v", number)
+	}
 }
 
 func slen[T any](slice []T) string {
