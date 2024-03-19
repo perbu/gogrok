@@ -25,13 +25,13 @@ func (p *Package) AddFile(name string, file *ast.File) *File {
 		panic("readFile: " + err.Error())
 
 	}
-	generated := false
+	fileType := NameToFileType(name)
 	// try to detect if the file is generated
-	if len(lines) > 5 {
+
+	if fileType == HumanGo && len(lines) > 5 {
 		for _, line := range lines[:5] {
 			if strings.Contains(line, "generated") {
-				generated = true
-				slog.Info("generated file detected", "file", name)
+				fileType = GeneratedGo
 				break
 			}
 		}
@@ -39,13 +39,13 @@ func (p *Package) AddFile(name string, file *ast.File) *File {
 
 	// create a new file:
 	f := &File{
-		Name:      path.Base(name),
-		Imports:   make([]*Package, 0),
-		Package:   p,
-		Module:    p.Module,
-		source:    lines,
-		ast:       file,
-		generated: generated,
+		Name:    path.Base(name),
+		Imports: make([]*Package, 0),
+		Package: p,
+		Module:  p.Module,
+		source:  lines,
+		ast:     file,
+		Type:    fileType,
 	}
 	p.files = append(p.files, f)
 	return f
@@ -152,11 +152,27 @@ func (v *complexityVisitor) Visit(n ast.Node) ast.Visitor {
 
 // CalculateComplexity walks the AST of a Go file to calculate its cyclomatic complexity.
 func (f *File) CalculateComplexity() float32 {
-	if f.generated {
+	if f.Type == GeneratedGo {
 		slog.Info("complex skipping generated file", "file", f.Name)
 		return 1.0
 	}
 	v := &complexityVisitor{}
 	ast.Walk(v, f.ast)
 	return float32(v.complexity) + 1 // Adding 1 for the entry point
+}
+
+func NameToFileType(name string) FileType {
+	switch path.Ext(name) {
+	case ".go":
+		// check if the name ends in .gen.go
+		if strings.HasSuffix(name, ".gen.go") {
+			return GeneratedGo
+		}
+		if strings.HasSuffix(name, "_test.go") {
+			return TestGo
+		}
+		return HumanGo
+	default:
+		return Unknown
+	}
 }

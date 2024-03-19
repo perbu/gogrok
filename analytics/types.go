@@ -27,11 +27,22 @@ type Package struct {
 }
 
 type File struct {
-	Name      string     // file name, not including the path
-	Imports   []*Package // list of imported packages
-	Package   *Package   // reference to the package this file belongs to
-	Module    *Module    // reference to the module
-	source    []string   // file contents, split into lines, allow for references to files and lines
-	ast       *ast.File
-	generated bool
+	Name    string     // file name, not including the path
+	Imports []*Package // list of imported packages
+	Package *Package   // reference to the package this file belongs to
+	Module  *Module    // reference to the module
+	source  []string   // file contents, split into lines, allow for references to files and lines
+	ast     *ast.File
+	Type    FileType
 }
+
+type FileType int
+
+const (
+	Unknown FileType = iota
+	HumanGo
+	GeneratedGo
+	TestGo
+)
+
+//go:generate stringer -type=FileType

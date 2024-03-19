@@ -32,7 +32,7 @@ func (p *Package) Generated() float32 {
 	generated := 0
 	total := 0
 	for _, file := range p.files {
-		if file.generated {
+		if file.Type == HumanGo {
 			generated += file.Lines()
 		}
 		total += file.Lines()
