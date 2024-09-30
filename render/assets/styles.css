@@ -1,73 +1,107 @@
-/* Existing styles */
+/* Global styles */
 body {
     font-family: Arial, sans-serif;
-    margin: 40px;
-    background-color: #f9f9f9;
-    color: #333;
+    margin: 0;
+    background-color: #f8f9fa;
+    color: #212529;
 }
+
 .container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 30px;
     background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
 }
+
 h1 {
-    color: #0275d8;
+    color: #aaaaaa;
+    background-color: #ffffff;
+    margin-bottom: 20px;
 }
+
 ul {
     list-style-type: none;
     padding: 0;
 }
+
 li {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-}
-a {
-    color: #0275d8;
-    text-decoration: none;
+    padding: 15px;
+    border-bottom: 1px solid #e9ecef;
+    transition: background-color 0.3s ease;
 }
 
-/* New styles */
+li:last-child {
+    border-bottom: none;
+}
+
+li:hover {
+    background-color: #f8f9fa;
+}
+
+a {
+    color: #0d6efd;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #0a58ca;
+}
+
+/* Module stats */
 .module-stats {
     display: flex;
     justify-content: space-between;
-    margin-top: 5px;
+    margin-top: 10px;
 }
+
 .module-stats div {
-    width: 50%; /* Ensure each list takes 50% of the horizontal space */
+    width: 50%;
 }
+
 .stats-list {
-    padding-left: 20px; /* Adjust padding as needed for alignment */
+    padding-left: 25px;
 }
+
 .stats-label {
     font-weight: bold;
+    color: #6c757d;
 }
 
-/* Alert style for HTMX errors - bright red text on yellow background*/
+/* Alert style for HTMX errors */
 .htmxerror {
-    color: #ff0000;
-    background-color: #ffff00;
+    color: #dc3545;
+    background-color: #fff3cd;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
 }
 
-/* Base styling scoped to code container */
+/* Code container */
 .code-container {
     font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
     font-size: 16px;
     color: #333333;
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 5px;
+    margin-top: 20px;
 }
 
 /* Code */
 .code-container pre.go-code {
     background-color: #ffffff;
-    border: 1px solid #dddddd;
+    border: 1px solid #e9ecef;
     overflow: auto;
-    padding: 10px;
+    padding: 15px;
+    border-radius: 5px;
 }
 
-/* Now prefix all your other classes with .code-container to scope them correctly */
+/* Go syntax highlighting */
 .code-container .go-keyword {
-    color: #0000FF;
+    color: #0033cc;
     font-weight: bold;
 }
 
@@ -76,36 +110,39 @@ a {
     font-style: italic;
 }
 
-
-/* Strings */
 .code-container .go-string {
-    color: #A31515; /* Dark red */
+    color: #d73038;
 }
 
-/* Preprocessor statements (e.g., import, package) */
 .code-container .go-preprocessor {
-    color: #FF4500;
+    color: #ff8c00;
 }
 
-/* Types (e.g., int, bool, custom types) */
 .code-container .go-type {
-    color: #2B91AF;
+    color: #2f6f9f;
 }
 
 .code-container .go-literal {
-    color: #00008B; /* Dark blue */
+    color: #0000cd;
 }
 
 .code-container .go-identifier {
-    color: #6A3E3E;
+    color: #6a5acd;
 }
 
-/* Functions and method names */
 .code-container .go-function {
     color: #008080;
 }
 
-/* Operators (e.g., +, -, *, /) */
 .code-container .go-operator {
-    color: #000000; /* Black, can adjust if needed */
+    color: #000000;
+}
+
+.inverted-title {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #000000;
+    color: #ffffff;
+    font-weight: bold;
+    border-radius: 5px;
 }

@@ -22,12 +22,14 @@ type Server struct {
 	Repo      *analytics.Repo
 	srv       *http.Server
 	templates *template.Template
+	logger    *slog.Logger
 }
 
-func New(repo *analytics.Repo) (*Server, error) {
+func New(repo *analytics.Repo, logger *slog.Logger) (*Server, error) {
 	const defaultPort = 8080
 	s := &Server{
-		Repo: repo,
+		Repo:   repo,
+		logger: logger.WithGroup("webserver"),
 	}
 	r := loggingMiddleware(makeMux(s))
 	addr := fmt.Sprintf(":%d", getEnvInt("PORT", defaultPort))
@@ -52,6 +54,7 @@ func (s *Server) Start(ctx context.Context) error {
 		defer cancel()
 		_ = s.srv.Shutdown(timeout)
 	}()
+	s.logger.Info("Starting HTTP server", "addr", s.srv.Addr)
 	err := s.srv.ListenAndServe()
 	if err != nil && !errors.Is(err, http.ErrServerClosed) {
 		return fmt.Errorf("srv.ListenAndServe: %w", err)

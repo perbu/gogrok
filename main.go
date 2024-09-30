@@ -33,10 +33,11 @@ func run(ctx context.Context, output io.Writer, env, args []string) error {
 	if err != nil {
 		return fmt.Errorf("r.Parse: %w", err)
 	}
+	logger := slog.Default()
 	// log memory usage so far:
-	logMemoryUsage()
+	logMemoryUsage(logger)
 
-	s, err := render.New(r)
+	s, err := render.New(r, logger)
 	if err != nil {
 		return fmt.Errorf("render.New: %w", err)
 	}
@@ -48,10 +49,10 @@ func run(ctx context.Context, output io.Writer, env, args []string) error {
 	return nil
 }
 
-func logMemoryUsage() {
+func logMemoryUsage(logger *slog.Logger) {
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
-	slog.Info("Heap Stats",
+	logger.Info("Heap Stats",
 		"HeapAlloc", humanize.Bytes(m.HeapAlloc),
 		"HeapSys", humanize.Bytes(m.HeapSys),
 		"HeapIdle", humanize.Bytes(m.HeapIdle),
