@@ -46,3 +46,13 @@ const (
 )
 
 //go:generate stringer -type=FileType
+
+// Overview type provides a high-level overview of the repo
+type Overview struct {
+	Modules          int
+	Packages         int
+	Files            int
+	LoC              int
+	OutdatedModules  int
+	SecurityProblems int
+}

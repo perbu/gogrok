@@ -30,7 +30,7 @@ func (p *Package) AddFile(name string, file *ast.File) *File {
 
 	if fileType == HumanGo && len(lines) > 5 {
 		for _, line := range lines[:5] {
-			if strings.Contains(line, "generated") {
+			if strings.Contains(line, "Code generated") {
 				fileType = GeneratedGo
 				break
 			}

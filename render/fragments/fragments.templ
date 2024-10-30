@@ -12,7 +12,6 @@ templ About() {
     </div>
     }
 
-
 templ ExternalModules(mods []analytics.Module) {
     <div id="module">
     <h2>External Modules</h2>
@@ -56,10 +55,12 @@ templ Module(mod *analytics.Module) {
     <div id="module">
         <h3>{mod.Path}</h3>
         <p>
-            Versions:
+            Versions in use:
+            <ul>
             for _, v := range mod.GetVersions() {
-                {v}&nbsp;
+                <li>{v}&nbsp;</li>
             }
+            </ul>
         </p>
         <p>
             {slen(mod.Dependencies)} dependencies, has {slen(mod.ReverseModuleDependencies)} reverse dependencies.
