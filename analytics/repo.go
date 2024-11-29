@@ -1,8 +1,9 @@
 package analytics
 
 import (
+	"context"
 	"fmt"
-	"github.com/perbu/gogrok/gitver"
+	"github.com/perbu/gogrok/modver"
 	mf "golang.org/x/mod/modfile"
 	"log/slog"
 	"os"
@@ -15,8 +16,9 @@ import (
 
 func New(path string) (*Repo, error) {
 	r := &Repo{
-		modules:  make(map[string]*Module),
-		basePath: path,
+		modules:    make(map[string]*Module),
+		basePath:   path,
+		modTracker: modver.New(),
 	}
 	return r, nil
 }
@@ -60,6 +62,22 @@ func (r *Repo) Parse() error {
 	start = time.Now()
 	r.reverseDeps()
 	slog.Info("populated reverse dependencies", "duration", time.Since(start))
+	// Get remove tags for all external dependencies
+	start = time.Now()
+	for _, mod := range r.ModuleFilter(DepTypeExternal, "") {
+		versions, err := r.modTracker.GetTags(context.TODO(), mod.Path)
+		if err != nil {
+			return fmt.Errorf("modTracker.GetTags(%s): %w", mod.Path, err)
+		}
+		mod.AddVersions(versions)
+		slog.Debug("fetched remote tags", "module", mod.Path, "versions", len(versions))
+	}
+	slog.Info("fetched remote tags", "duration", time.Since(start))
+	// close the modTracker cache:
+	err = r.modTracker.Close()
+	if err != nil {
+		return fmt.Errorf("modTracker.Close: %w", err)
+	}
 	return nil
 }
 
@@ -112,9 +130,9 @@ func (r *Repo) FindModule(path string) (string, bool) {
 
 func (r *Repo) ParseMod(modulePath string) error {
 
-	latestVersion, err := gitver.GetLatestTag(modulePath)
+	latestVersion, err := r.modTracker.GetLatestVersion(context.TODO(), modulePath)
 	if err != nil {
-		return fmt.Errorf("gitver.GetLatestTag: %w")
+		return fmt.Errorf("gitver.GetLatestTag: %w", err)
 	}
 
 	modFilePath := filepath.Join(modulePath, "go.mod")

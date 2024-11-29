@@ -1,7 +1,7 @@
 package analytics
 
 import (
-	"slices"
+	"golang.org/x/mod/semver"
 )
 
 type DepType int
@@ -53,7 +53,14 @@ func (m *Module) AddVersion(version string) {
 	}
 	m.versions = append(m.versions, version)
 	// sort the versions
-	slices.Sort(m.versions)
+	semver.Sort(m.versions)
+}
+
+func (m *Module) AddVersions(versions []string) {
+	m.versions = append(m.versions, versions...)
+	// should we suppress duplicates?
+	// sort the versions
+	semver.Sort(m.versions)
 }
 
 func (m *Module) GetVersions() []string {

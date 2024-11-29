@@ -4,6 +4,7 @@ go 1.22.1
 
 require (
 	github.com/a-h/templ v0.2.598
+	github.com/boltdb/bolt v1.3.1
 	github.com/dustin/go-humanize v1.0.1
 	github.com/edoardottt/depsdev v0.1.0
 	github.com/go-git/go-git/v5 v5.11.0

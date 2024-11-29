@@ -1,10 +1,14 @@
 package analytics
 
-import "go/ast"
+import (
+	"github.com/perbu/gogrok/modver"
+	"go/ast"
+)
 
 type Repo struct {
-	modules  map[string]*Module
-	basePath string
+	modules    map[string]*Module
+	basePath   string
+	modTracker *modver.ModTracker
 }
 
 type Module struct {
