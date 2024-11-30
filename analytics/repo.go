@@ -154,6 +154,7 @@ func (r *Repo) ParseMod(modulePath string) error {
 			Repo:                      r,
 			ReverseModuleDependencies: make([]*Module, 0),
 			versions:                  make([]string, 0),
+			LatestVersion:             latestVersion,
 		}
 	}
 	m.Type = DepTypeLocal

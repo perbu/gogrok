@@ -20,6 +20,7 @@ type Module struct {
 	Type                      DepType    // either a local (on-disk) or external (remote) module
 	Repo                      *Repo      // reference to the repo
 	ReverseModuleDependencies []*Module  // List of modules that depend on this module
+	LatestVersion             string     // latest version of the module
 }
 
 type Package struct {
