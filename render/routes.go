@@ -13,21 +13,24 @@ func makeMux(s *Server) *mux.Router {
 	// make a 404 handler:
 	// mux.HandleFunc("/", notFoundHandler)
 
-	// Serve the index.html for the initial page load
-	gmux.HandleFunc("/", makeStaticHandler("assets/index.html")).Methods(http.MethodGet)
+	// Create an API subrouter for fragment content
+	api := gmux.PathPrefix("/api").Subrouter()
+
+	// Add fragment content routes to the API subrouter
+	api.HandleFunc("/dashboard", s.handleDashboard).Methods(http.MethodGet)
+	api.HandleFunc("/local", s.handleLocalModuleList).Methods(http.MethodGet)
+	api.HandleFunc("/external", s.handleExternalModuleList).Methods(http.MethodGet)
+	api.HandleFunc("/about", s.handleAbout).Methods(http.MethodGet)
+	api.HandleFunc("/module/{module:.*}", s.handleModule).Methods(http.MethodGet)
+	api.HandleFunc("/package/{module:[^?]*}", s.handlePackage).Methods(http.MethodGet)
+	api.HandleFunc("/file/{module:[^?]*}", s.handleFile).Methods(http.MethodGet)
 
 	// serve the styles.css directly from the assets embedded filesystem:
 	gmux.HandleFunc("/styles.css", makeStaticHandler("assets/styles.css")).Methods(http.MethodGet)
 	gmux.HandleFunc("/script.js", makeStaticHandler("assets/script.js")).Methods(http.MethodGet)
 
-	// Add dashboard as the default content
-	gmux.HandleFunc("/dashboard", s.handleDashboard).Methods(http.MethodGet)
-	gmux.HandleFunc("/local", s.handleLocalModuleList).Methods(http.MethodGet)
-	gmux.HandleFunc("/external", s.handleExternalModuleList).Methods(http.MethodGet)
-	gmux.HandleFunc("/about", s.handleAbout).Methods(http.MethodGet)
-	gmux.HandleFunc("/module/{module:.*}", s.handleModule).Methods(http.MethodGet)
-	gmux.HandleFunc("/package/{module:[^?]*}", s.handlePackage).Methods(http.MethodGet)
-	gmux.HandleFunc("/file/{module:[^?]*}", s.handleFile).Methods(http.MethodGet)
+	// Serve the index.html for all other routes (including the initial page load)
+	gmux.PathPrefix("/").HandlerFunc(makeStaticHandler("assets/index.html")).Methods(http.MethodGet)
 	return gmux
 }
 

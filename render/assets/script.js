@@ -30,19 +30,22 @@ function updateBreadcrumbs(path) {
     let currentPage = "Dashboard";
 
     // Extract the page name from the path
-    if (path === "/dashboard") {
+    // Remove '/api' prefix if present
+    const normalizedPath = path.replace(/^\/api/, '');
+
+    if (normalizedPath === "/dashboard") {
         currentPage = "Dashboard";
-    } else if (path === "/local") {
+    } else if (normalizedPath === "/local") {
         currentPage = "Local Modules";
-    } else if (path === "/external") {
+    } else if (normalizedPath === "/external") {
         currentPage = "External Modules";
-    } else if (path === "/about") {
+    } else if (normalizedPath === "/about") {
         currentPage = "About";
-    } else if (path.startsWith("/module/")) {
+    } else if (normalizedPath.startsWith("/module/")) {
         currentPage = "Module Details";
-    } else if (path.startsWith("/package/")) {
+    } else if (normalizedPath.startsWith("/package/")) {
         currentPage = "Package Details";
-    } else if (path.startsWith("/file/")) {
+    } else if (normalizedPath.startsWith("/file/")) {
         currentPage = "File Details";
     }
 
