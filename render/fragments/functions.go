@@ -51,3 +51,12 @@ func fileUrl(file *analytics.File) string {
 	u.RawQuery = q.Encode()
 	return u.String()
 }
+
+// truncateVersion truncates a version string if it's longer than 10 characters
+// and adds "..." at the end
+func truncateVersion(version string) string {
+	if len(version) > 10 {
+		return version[:10] + "..."
+	}
+	return version
+}
