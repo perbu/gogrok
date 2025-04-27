@@ -70,6 +70,46 @@ func (s *Server) handleAbout(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (s *Server) handleDashboard(w http.ResponseWriter, r *http.Request) {
+	// Get counts for dashboard widgets
+	localModules := s.Repo.ModuleFilter(analytics.DepTypeLocal, "")
+	externalModules := s.Repo.ModuleFilter(analytics.DepTypeExternal, "")
+
+	// Calculate total lines of code for local modules
+	totalLoc := 0
+	for _, mod := range localModules {
+		totalLoc += mod.Lines()
+	}
+
+	// Calculate average complexity for local modules
+	totalComplexity := float32(0)
+	moduleCount := len(localModules)
+	for _, mod := range localModules {
+		totalComplexity += mod.CalculateComplexity()
+	}
+	avgComplexity := int(0)
+	if moduleCount > 0 {
+		avgComplexity = int(totalComplexity / float32(moduleCount))
+	}
+
+	// Create dashboard data
+	dashboardData := map[string]interface{}{
+		"LocalModulesCount":     len(localModules),
+		"ExternalModulesCount":  len(externalModules),
+		"TotalLoc":              totalLoc,
+		"AvgComplexity":         avgComplexity,
+		"SecurityIssuesCount":   0, // Placeholder for future implementation
+		"OutdatedDepsCount":     0, // Placeholder for future implementation
+	}
+
+	// Render dashboard template
+	err := fragments.Dashboard(dashboardData).Render(r.Context(), w)
+	if err != nil {
+		slog.Error("templ Render", "fragment", "dashboard", "error", err)
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+	}
+}
+
 func (s *Server) handleModule(writer http.ResponseWriter, request *http.Request) {
 	// get the module name from the URL
 	vars := mux.Vars(request)

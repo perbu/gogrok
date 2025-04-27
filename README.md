@@ -1,81 +1,105 @@
-# Gogrok code analytics
+# Gogrok: Go Codebase Analytics & Interdependency Explorer
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/perbu/gogrok.svg)](https://pkg.go.dev/github.com/perbu/gogrok)
+Gogrok analyzes a collection of local Go modules to provide insights into their structure, dependencies, and relationships. It helps answer questions like "Which local modules use this package?" or "What are the dependencies of this module?".
 
-## Introduction
+![Gogrok Screenshot](gogrok.png) ## Features
 
-The goal of Gogrok is to provide insight into how different Go modules interface with each other.  The primary 
-question it is trying to answer is "what code imports this package?". 
+* **Dependency Mapping:** Parses `go.mod` files to identify direct module dependencies.
+* **Reverse Dependency Tracking:** Determines which local modules and packages depend on a given module or package.
+* **Source Code Analysis:** Parses Go source files (`.go`) to understand package imports and structure.
+* **Basic Code Metrics:** Calculates Lines of Code (LoC) and Cyclomatic Complexity for files, packages, and modules. Differentiates generated code.
+* **Version Tracking:** Identifies the latest Git tag for local modules and fetches available versions for external dependencies from `proxy.golang.org` (with caching).
+* **Web Interface:** Provides an interactive web UI (using Go Templates/`templ` and HTMX) to browse:
+    * Local Modules
+    * External Dependencies
+    * Module details (dependencies, reverse dependencies, packages, versions)
+    * Package details (files, reverse dependencies, stats)
+    * File contents
 
-![Gogrok](gogrok.png)
+## How It Works
 
-## How it works
+Gogrok requires the Go modules you want to analyze to be present as subdirectories within a `code/` directory relative to where you run Gogrok. These should ideally be Git checkouts.
 
-Gogrok has a folder which contains all the Go modules that it is analyzing. For ease of use these should be git 
-checkouts.
+1.  **Initialization:** Reads the directories within `code/`.
+2.  **Module Parsing:** Parses the `go.mod` file in each directory to identify the module path and its required dependencies. It builds an initial map of local and external modules. It also fetches the latest Git tag for local modules.
+3.  **Source Parsing:** For local modules, it walks the directory tree, parsing all `.go` files using Go's `go/parser` and `go/ast` packages. It identifies package imports and links them back to the corresponding modules (local or external).
+4.  **Reverse Dependency Calculation:** Populates reverse dependencies for both modules and packages based on the parsed import graph.
+5.  **External Version Fetching:** Queries `proxy.golang.org` to get a list of available versions for all identified external modules. Results are cached in `.cache.bolt.db`.
+6.  **Web Server:** Starts a web server presenting the analyzed data through an HTMX-powered interface.
 
-Gogrok works by parsing the go.mod files to map inter-module dependencies. It then proceeds to analyze the source code
-to see how the different packages relate to each other.
+## Getting Started
 
-Gogrok has no persistent storage. It parses all the code every time it starts up. Because the Go parser is so fast,
-this has not been a problem for me. But if you find this problematic it should be fairly simple to serialize the 
-parsed data to disk.
+1.  **Clone the repository:**
+    ```bash
+    git clone [https://github.com/perbu/gogrok.git](https://github.com/perbu/gogrok.git)
+    cd gogrok
+    ```
+2.  **Create the code directory:**
+    ```bash
+    mkdir code
+    ```
+3.  **Clone your Go modules into the `code/` directory:**
+    ```bash
+    cd code
+    git clone git@github.com:your-org/your-module1.git
+    git clone git@github.com:your-org/your-module2.git
+    # ... add all modules you want to analyze
+    cd ..
+    ```
+4.  **Build and Run:**
+    ```bash
+    go build .
+    ./gogrok
+    # Or run directly
+    # go run main.go
+    ```
+5.  Open your web browser to `http://localhost:8080` (or the port specified by the `PORT` environment variable).
 
-### How to update the git repos
+### Updating Repositories
 
-If you have all the repos in a file called `repos.txt` you can GNU Parallel the following command to update all the repos: 
-```bash
-xargs -I {} -P 5 git -C {} pull < repos.txt
-```
-One repo on each line in `repos.txt`. 
+To update all the Git repositories in the `code/` directory, you can use a helper script or commands like these:
 
-This will go a lot faster if you have the following in your `~.ssh/config` file:
-```
-Host github.com
-  ControlMaster auto
-  ControlPath ~/.ssh/sockets/%r@%h-%p
-  ControlPersist 600
-```
-This will allow you to reuse the same SSH connection for all the git interactions.
+**Using GNU Parallel (Faster):**
 
-If you want to do it one repo at a time you can use the following command:
-```bash
-for repo in $(cat repos.txt); do echo $repo; git -C $repo pull; done
-```
+* Create a file `repos.txt` inside the `code/` directory listing the subdirectory names (one per line).
+* Run:
+    ```bash
+    cd code
+    cat repos.txt | parallel -j 5 'echo {}; git -C {} pull'
+    cd ..
+    ```
 
-## Interface
+**Simple Loop:**
 
-The interface is a SPA that is served by the Go server. It uses HTMX to load the different fragments.
+* Create `repos.txt` as above.
+* Run:
+    ```bash
+    cd code
+    for repo in $(cat repos.txt); do echo "Updating $repo"; git -C "$repo" pull; done
+    cd ..
+    ```
+  *(Consider adding SSH ControlMaster settings to your `~/.ssh/config` for speed, as mentioned in the original README).*
 
-### Front page - initial state.
+## Planned Features / Future Work
 
-The front page has some navigation links at the top. There are three links. 
-"local modules", "external dependencies", and "about". "local modules" is the default page.
+* Security vulnerability scanning integration.
+ * Integrate govulncheck, either via exec or look at https://github.com/golangci/golangci-lint/blob/main/cmd/golangci-lint/main.go
+ * 
+* More advanced code metrics (e.g., maintainability index, coupling).
+ * Maintainability Index: Calculate this based on complexity, LoC, etc.
+ * Coupling & Cohesion: Analyze afferent (incoming) and efferent (outgoing) couplings for packages/modules. High efferent coupling might indicate a module relies too heavily on others. High afferent coupling means many others depend on it (potential bottleneck or core library).
+ * Code Duplication: Integrate a tool (like gocpd or build a simpler AST-based checker) to find duplicated code blocks across modules.
+ * Dead Code Detection: Identify exported functions/types within your local modules that are not used by any other local modules.
+* Dependency analysis:
+  * Transitive Dependencies: Show the full chain of dependencies, not just direct ones.
+  * Dependency Updates: Flag modules (local and external) where the version used is significantly behind the latest available version ( fetched via proxy.golang.org or git tags). Differentiate between minor/patch updates and major version changes.
+  * License Compliance: Parse LICENSE files (if possible) or integrate with APIs that provide license info for external dependencies. Allow defining allowed/disallowed licenses.
+* Improved UI/UX.
+  * Dependency Graphs: Generate visual graphs (e.g., using Mermaid.js, Cytoscape.js, or Graphviz) showing module-to-module or package-to-package dependencies and reverse dependencies. Make them interactive (zoom, pan, click nodes to navigate).
+* Optional persistent caching of analysis results if startup-times becomes a problem.
+* Try it out on k8s and docker. 
 
-Below there is a main fragment where the content is loaded. Initially this fragment contains the local 
-modules listing.
+## License
 
-For each module it states the module name/path,  which is clickable. When you click on the module 
-name/path it will replace the main fragment with the module fragment.
-
-Below the name/path lists the number of packages, the number of files, the number of lines of code in the module.
-
-There are also two buttons to view dependencies and reverse dependencies. When shown the dependencies are listed in a
-vertical list, each module is clickable. Clicking on the dependency will load the module fragment for the dependency.
-
-### Local Module fragment
-
-The module page gets invoked when you click on a module.
-Below the module name it lists the followings stats for the module:
-The number of packages, the number of files, the number of lines of code in the module.
-
-Below is a horizontal list of the packages in the module. 
-
-Clicking on a package will load the package fragment below but will not change the module fragment.
-
-The package fragment will add another horizontal list of the files in the package. If you click on a file it will load
-the file fragment below the package fragment. The file fragment will show the file.
-
-### External dependencies fragment
-
-This fragment lists all the external dependencies. 
-It lists the module name/path. Below each module is a bullet list of the packages that import this module.
+[BSD 3-Clause License](LICENSE.md) - Copyright (c) 2024 Per Buer.

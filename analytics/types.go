@@ -50,7 +50,7 @@ const (
 	TestGo
 )
 
-//go:generate stringer -type=FileType
+//go:generate go run golang.org/x/tools/cmd/stringer@latest -type=FileType
 
 // Overview type provides a high-level overview of the repo
 type Overview struct {

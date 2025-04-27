@@ -3,41 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Go Modules Dependency Viewer</title>
+    <title>Gogrok - Go Dependency Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="styles.css">
     <script src="https://unpkg.com/htmx.org@1.9.10"
             integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC"
             crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
-<h1>Gogrok - Go Interdependency analysis</h1>
-<div id="htmx-alert" hidden class="htmxerror" ></div>
-<hr/>
-<div>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container">
-            <a href="#" class="navbar-brand" hx-get="/local" hx-target="#module">Local Modules</a>
-            <a href="#" class="navbar-brand" hx-get="/external" hx-target="#module">External Modules</a>
-            <a href="#" class="navbar-brand" hx-get="/about" hx-target="#module">About</a>
+<body class="bg-gray-100 min-h-screen">
+    <div id="htmx-alert" hidden class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 mx-4 mt-4" role="alert"></div>
+
+    <!-- Header -->
+    <header class="bg-white shadow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-gray-800">Gogrok</h1>
         </div>
-    </nav>
-</div>
-<!-- Module list or Module view here -->
-<div class="container" id="module">
-    No content loaded...
-</div>
+    </header>
 
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white shadow-md h-screen fixed">
+            <nav class="mt-5 px-2">
+                <a href="#" class="group flex items-center px-2 py-2 text-base leading-6 font-medium rounded-md text-gray-900 bg-gray-100 focus:outline-none focus:bg-gray-200 transition ease-in-out duration-150" hx-get="/dashboard" hx-target="#content" hx-push-url="true">
+                    <i class="fas fa-tachometer-alt mr-3 text-gray-500 group-hover:text-gray-600"></i>
+                    Dashboard
+                </a>
+                <a href="#" class="mt-1 group flex items-center px-2 py-2 text-base leading-6 font-medium rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-50 focus:outline-none focus:bg-gray-100 transition ease-in-out duration-150" hx-get="/local" hx-target="#content" hx-push-url="true">
+                    <i class="fas fa-cube mr-3 text-gray-500 group-hover:text-gray-600"></i>
+                    Local Modules
+                </a>
+                <a href="#" class="mt-1 group flex items-center px-2 py-2 text-base leading-6 font-medium rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-50 focus:outline-none focus:bg-gray-100 transition ease-in-out duration-150" hx-get="/external" hx-target="#content" hx-push-url="true">
+                    <i class="fas fa-cubes mr-3 text-gray-500 group-hover:text-gray-600"></i>
+                    External Modules
+                </a>
+                <a href="#" class="mt-1 group flex items-center px-2 py-2 text-base leading-6 font-medium rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-50 focus:outline-none focus:bg-gray-100 transition ease-in-out duration-150" hx-get="/about" hx-target="#content" hx-push-url="true">
+                    <i class="fas fa-shield-alt mr-3 text-gray-500 group-hover:text-gray-600"></i>
+                    Security Overview
+                </a>
+                <a href="#" class="mt-1 group flex items-center px-2 py-2 text-base leading-6 font-medium rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-50 focus:outline-none focus:bg-gray-100 transition ease-in-out duration-150" hx-get="/about" hx-target="#content" hx-push-url="true">
+                    <i class="fas fa-cog mr-3 text-gray-500 group-hover:text-gray-600"></i>
+                    Settings
+                </a>
+            </nav>
+        </aside>
 
-<div class="container" id="file">
+        <!-- Main Content -->
+        <main class="flex-1 ml-64 p-6">
+            <!-- Breadcrumbs -->
+            <nav class="text-sm font-medium mb-4" aria-label="Breadcrumb">
+                <ol class="list-none p-0 inline-flex">
+                    <li class="flex items-center">
+                        <a href="#" class="text-gray-500 hover:text-gray-700" hx-get="/dashboard" hx-target="#content" hx-push-url="true">Dashboard</a>
+                        <span class="mx-2 text-gray-400">/</span>
+                    </li>
+                    <li class="flex items-center text-gray-700" id="breadcrumb-current">Home</li>
+                </ol>
+            </nav>
 
-</div>
-<hr/>
-<div class="container">
-    <footer>
-        <p>&copy; 2024 Per Buer</p>
+            <!-- Content Area -->
+            <div class="bg-white shadow rounded-lg p-6" id="content">
+                <div id="module">
+                    <div class="text-center py-10">
+                        <i class="fas fa-spinner fa-spin text-4xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-500">Loading content...</p>
+                    </div>
+                </div>
+                <div id="file"></div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="bg-white shadow mt-8 py-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <p class="text-center text-gray-500">&copy; 2024 Per Buer</p>
+        </div>
     </footer>
-</div>
 <script src="script.js"></script>
 </body>
 </html>

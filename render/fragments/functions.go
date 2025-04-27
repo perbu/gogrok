@@ -8,7 +8,7 @@ import (
 )
 
 // use templ to generate the Go code:
-//go:generate templ generate fragments.templ
+//go:generate go run github.com/a-h/templ/cmd/templ@latest generate fragments.templ
 
 func s(number any) string {
 	switch typedNumber := number.(type) {
