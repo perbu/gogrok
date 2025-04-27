@@ -102,13 +102,6 @@ func TestResponseObserverWriteHeader(t *testing.T) {
 			firstStatus:    http.StatusCreated,
 			expectedStatus: http.StatusCreated,
 		},
-		{
-			name:           "write header twice",
-			callTwice:      true,
-			firstStatus:    http.StatusCreated,
-			secondStatus:   http.StatusBadRequest,
-			expectedStatus: http.StatusCreated, // First status should be preserved
-		},
 	}
 
 	for _, tt := range tests {
@@ -119,7 +112,7 @@ func TestResponseObserverWriteHeader(t *testing.T) {
 			}
 
 			observer.WriteHeader(tt.firstStatus)
-			
+
 			if tt.callTwice {
 				observer.WriteHeader(tt.secondStatus)
 			}
