@@ -72,4 +72,11 @@ document.addEventListener('DOMContentLoaded', function() {
             this.classList.add('text-gray-900', 'bg-gray-100');
         });
     });
+
+    // Automatically load dashboard content on initial page load
+    const contentDiv = document.getElementById('content');
+    if (contentDiv) {
+        // Use HTMX to load the dashboard content
+        htmx.ajax('GET', '/api/dashboard', {target: '#content', push: '/dashboard'});
+    }
 });
