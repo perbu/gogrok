@@ -3,7 +3,6 @@ package fragments
 import (
 	"github.com/perbu/gogrok/analytics"
 	"fmt"
-	"strconv"
 )
 
 templ About() {
@@ -37,15 +36,35 @@ templ ExternalModules(mods []analytics.Module) {
 templ LocalModules(mods []analytics.Module) {
     <div id="module">
     <h2>Local Modules</h2>
-    <ul>
-    for _, mod := range mods {
-        <li>
-            <a href="#" hx-get={moduleUrl(&mod)} hx-target="#module"
-            >{mod.Path}</a> - {mod.Latest()} - Complexity {fmt.Sprintf("%.1f", mod.CalculateComplexity())} -  {slen(mod.Dependencies)} dependencies, has
-            {slen(mod.ReverseModuleDependencies)} reverse dependencies. {s(mod.Files())} files, {s(mod.Lines())} lines.
-        </li>
-    }
-    </ul>
+    <table class="module-table">
+        <thead>
+            <tr>
+                <th>Module</th>
+                <th>Version</th>
+                <th>Complexity</th>
+                <th>Dependencies</th>
+                <th>Reverse Dependencies</th>
+                <th>Files</th>
+                <th>Lines</th>
+            </tr>
+        </thead>
+        <tbody>
+        for _, mod := range mods {
+            <tr>
+                <td>
+                    <a href="#" hx-get={moduleUrl(&mod)} hx-target="#module" class="module-link"
+                    >{mod.Path}</a>
+                </td>
+                <td>{mod.Latest()}</td>
+                <td>{fmt.Sprintf("%.1f", mod.CalculateComplexity())}</td>
+                <td>{slen(mod.Dependencies)}</td>
+                <td>{slen(mod.ReverseModuleDependencies)}</td>
+                <td>{s(mod.Files())}</td>
+                <td>{s(mod.Lines())}</td>
+            </tr>
+        }
+        </tbody>
+    </table>
     </div>
     <div class="container" id="package">
       <!-- placeholder for package details -->

@@ -146,3 +146,53 @@ a:hover {
     font-weight: bold;
     border-radius: 5px;
 }
+
+/* Module table styles */
+.module-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.module-table th {
+    background-color: #f8f9fa;
+    padding: 12px;
+    text-align: left;
+    font-weight: bold;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.module-table td {
+    padding: 12px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.module-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Module link styles */
+.module-link {
+    color: #0d6efd;
+    text-decoration: none;
+    position: relative;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.module-link:hover {
+    color: #0a58ca;
+    text-decoration: underline;
+}
+
+.module-link::after {
+    content: "→";
+    opacity: 0;
+    margin-left: 5px;
+    transition: opacity 0.3s ease, margin-left 0.3s ease;
+}
+
+.module-link:hover::after {
+    opacity: 1;
+    margin-left: 8px;
+}
